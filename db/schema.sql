@@ -55,6 +55,3 @@ VALUES (1, 'John', 'Doe', 1, NULL),
        (7, 'Tom', 'Allen', 7, 6),
        (8, 'Samantha', 'Jones', 8, 6),
        (9, 'John', 'Doe', 9, 6);
-
--- View all employees
-SELECT * FROM employee;
