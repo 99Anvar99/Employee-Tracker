@@ -1,0 +1,15 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "MySQL Employee Tracker is a robust database application used to manage personnel data within an organization. It simplifies HR tasks, offering features like employee records, payroll, scheduling, and performance tracking. Its user-friendly interface ensures efficient workforce management.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anvar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.2"
+  }
+}
