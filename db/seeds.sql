@@ -1,29 +1,32 @@
-use employee;
+/* Seeding the database */
+USE employee_tracker;
 
--- Inserted data into the Department table
-INSERT INTO department (id, name)
-VALUES (1, 'Sales'), (2, 'Engineering'), (3, 'Finance'), (4, 'Legal');
+/* Inserting departments */
+INSERT INTO departments (name)
+VALUES 
+('Information Systems and Technology'),
+('Finance'),
+('Legal'),
+('Human Resources'),
+('Security'),
+('Sales');
 
--- Inserted data into the Role table
-INSERT INTO role (id, title, salary, department_id)
+/* Inserting roles */
+INSERT INTO roles (title, salary, department_id)
+VALUES
+('Web Developer', 90000.00, 1),
+('Accountant', 70000.00, 2),
+('Paralegal', 50000.00, 3),
+('Manager', 70000.00, 4),
+('Engineer', 90000.00, 5),
+('Sales Rep', 40000.00, 6);
 
-VALUES (1, 'Sales Lead', 100000.00, 1),
-       (2, 'Salesperson', 80000.00, 1),
-       (3, 'Lead Engineer', 150000.00, 2),
-       (4, 'Software Engineer', 120000.00, 2),
-       (5, 'Accountant', 125000.00, 3),
-       (6, 'Legal Team Lead', 250000.00, 4),
-       (7, 'Lawyer', 190000.00, 4);
-
--- Inserted data into the Employee table
-INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-
-VALUES (1, 'John', 'Doe', 1, NULL),
-       (2, 'Mike', 'Chan', 2, 1),
-       (3, 'Ashley', 'Rodriguez', 3, NULL),
-       (4, 'Kevin', 'Tupik', 4, 3),
-       (5, 'Malia', 'Brown', 5, NULL),
-       (6, 'Sarah', 'Lourd', 6, NULL),
-       (7, 'Tom', 'Allen', 7, 6),
-       (8, 'Samantha', 'Jones', 8, 6),
-       (9, 'John', 'Doe', 9, 6);
+/* Inserting employees */
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES 
+('John', 'Smith', 1, 458),
+('Ronald', 'Young', 2, 276),
+('David', 'Miller', 3, 486),
+('Maria', 'Hall', 4, 126),
+('Linda', 'Martin', 5, 724),
+('Taylor', 'Wilson', 6, 157);
