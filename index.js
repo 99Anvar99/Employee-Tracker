@@ -221,3 +221,51 @@ function addEmployee() {
     });
   });
 };
+
+// Update an employee's role
+function updateEmployeeRole() {
+  // Prompt the user for the employee details
+  enquirer.prompt([
+    {
+      type: 'input',
+      name: 'employeeId',
+      message: 'Enter the ID of the employee you want to update:'
+    },
+    {
+      type: 'input',
+      name: 'newRoleId',
+      message: 'Enter the new role ID for the employee:'
+    }
+  ]).then(function (response) {
+    // Update the employee's role in the database and prompt the user again 
+    connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [response.newRoleId, response.employeeId], function (err, res) {
+      if (err) throw err;
+      console.log('Employee [ ID: ' + response.employeeId + ' ] role updated successfully!');
+      promptUser();
+    });
+  });
+};
+
+// Update a role title
+function updateRoleTitle() {
+  // Prompt the user for the role details
+  enquirer.prompt([
+    {
+      type: 'input',
+      name: 'roleId',
+      message: 'Enter the ID of the role you want to update:'
+    },
+    {
+      type: 'input',
+      name: 'newTitle',
+      message: 'Enter the new title for the role:'
+    }
+  ]).then(function (response) {
+    // Update the role title in the database and prompt the user again 
+    connection.query('UPDATE roles SET title = ? WHERE id = ?', [response.newTitle, response.roleId], function (err, res) {
+      if (err) throw err;
+      console.log('Role [ ID: ' + response.roleId + ' ] title updated successfully!');
+      promptUser();
+    });
+  });
+};
