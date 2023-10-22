@@ -1,34 +1,28 @@
 const figlet = require('figlet');
-// Prompt the user to select an option
 const enquirer = require('enquirer');
 const connection = require('./config/connection');
 
-connection.connect(function (err) {
-  if (err) throw err;
-  console.log("Connected as id " + connection.threadId);
-  promptUser();
-});
-
-// List of choices for the user to select from
+// Define the choices using a more concise syntax
 const choices = [
-  { title: 'View all departments', value: 'viewDepartments' },
-  { title: 'View all roles', value: 'viewRoles' },
-  { title: 'View all employees', value: 'viewEmployees' },
-  { title: 'Add a department', value: 'addDepartment' },
-  { title: 'Add a role', value: 'addRole' },
-  { title: 'Add an employee', value: 'addEmployee' },
-  { title: 'Update an employee role', value: 'updateEmployeeRole' },
-  { title: 'Update a role title', value: 'updateRoleTitle' },
-  { title: 'Delete a role', value: 'deleteRole' },
-  { title: 'Delete an employee', value: 'deleteEmployee' },
-  { title: 'Delete a department', value: 'deleteDepartment' },
-  { title: 'Update an employee manager', value: 'updateEmployeeManager' },
-  { title: 'View employees by manager', value: 'viewEmployeesByManager' },
-  { title: 'View employees by department', value: 'viewEmployeesByDepartment' },
-  { title: 'View the total utilized budget of a department', value: 'viewTotalUtilizedBudget' },
-  { title: 'Exit', value: 'exit' },
+  { title: 'View all departments', value: viewDepartments },
+  { title: 'View all roles', value: viewRoles },
+  { title: 'View all employees', value: viewEmployees },
+  { title: 'Add a department', value: addDepartment },
+  { title: 'Add a role', value: addRole },
+  { title: 'Add an employee', value: addEmployee },
+  { title: 'Update an employee role', value: updateEmployeeRole },
+  { title: 'Update a role title', value: updateRoleTitle },
+  { title: 'Delete a role', value: deleteRole },
+  { title: 'Delete an employee', value: deleteEmployee },
+  { title: 'Delete a department', value: deleteDepartment },
+  { title: 'Update an employee manager', value: updateEmployeeManager },
+  { title: 'View employees by manager', value: viewEmployeesByManagerPrompt },
+  { title: 'View employees by department', value: viewEmployeesByDepartmentPrompt },
+  { title: 'View the total utilized budget of a department', value: viewTotalUtilizedBudgetPrompt },
+  { title: 'Exit', value: exit },
 ];
 
+// Prompts the user to select an option
 async function promptUser() {
   const response = await enquirer.prompt({
     type: 'select',
@@ -37,123 +31,73 @@ async function promptUser() {
     choices: choices.map(choice => choice.title),
   });
 
-  // Handle the selected option
   const selectedOption = choices.find(choice => choice.title === response.option);
   if (selectedOption) {
-    // Call the corresponding function or perform the desired action
-    switch (selectedOption.value) {
-      case 'viewDepartments':
-        viewDepartments();
-        break;
-      case 'viewRoles':
-        viewRoles();
-        break;
-      case 'viewEmployees':
-        viewEmployees();
-        break;
-      case 'addDepartment':
-        addDepartment();
-        break;
-      case 'addRole':
-        addRole();
-        break;
-      case 'addEmployee':
-        addEmployee();
-        break;
-      case 'updateEmployeeRole':
-        updateEmployeeRole();
-        break;
-      case 'updateRoleTitle':
-        updateRoleTitle();
-        break;
-      case 'deleteRole':
-        deleteRole();
-        break;
-      case 'deleteEmployee':
-        deleteEmployee();
-        break;
-      case 'deleteDepartment':
-        deleteDepartment();
-        break;
-      case 'updateEmployeeManager':
-        updateEmployeeManager();
-        break;
-      case 'viewEmployeesByManager':
-        viewEmployeesByManager();
-        break;
-      case 'viewEmployeesByDepartment':
-        viewEmployeesByDepartment();
-        break;
-      case 'viewTotalUtilizedBudget':
-        viewTotalUtilizedBudget();
-        break;
-      case 'exit':
-        figlet.text('Goodbye!', function (err, data) {
-          if (err) {
-            console.log('Something went wrong...');
-            console.dir(err);
-            return;
-          }
-          console.log(data);
-        })
-        connection.end();
-        break;
-      default:
-        console.log('Invalid option');
-    }
+    selectedOption.value(); // Call the corresponding function
   } else {
     console.log('Invalid option');
+    promptUser();
   }
-};
+}
+
+// Reusable function for executing queries and displaying results
+function executeQuery(query, params, successMessage) {
+  connection.query(query, params, function (err, res) {
+    if (err) throw err;
+    if (successMessage) {
+      console.log(successMessage);
+    }
+    if (res) {
+      console.table(res);
+    }
+    promptUser();
+  });
+}
 
 // View all departments
 function viewDepartments() {
-  connection.query('SELECT * FROM departments', function (err, res) {
-    if (err) throw err;
-    console.table(res);
-    promptUser();
-  });
-};
+  executeQuery('SELECT * FROM departments', null);
+}
 
 // View all roles
 function viewRoles() {
-  connection.query('SELECT * FROM roles', function (err, res) {
-    if (err) throw err;
-    console.table(res);
-    promptUser();
-  });
-};
+  executeQuery('SELECT * FROM roles', null);
+}
 
 // View all employees
 function viewEmployees() {
-  connection.query('SELECT * FROM employee', function (err, res) {
-    if (err) throw err;
-    console.table(res);
-    promptUser();
-  });
-};
+  executeQuery('SELECT * FROM employee', null);
+}
 
 // Add a department
 function addDepartment() {
-  // Prompt the user for the department name
-  enquirer.prompt({
-    type: 'input',
-    name: 'departmentName',
-    message: 'Enter the name of the department:',
-  }).then(function (response) {
-    // Insert the new department into the database and prompt the user again
-    connection.query('INSERT INTO departments SET ?', { name: response.departmentName }, function (err, res) {
-      if (err) throw err;
-      console.log('Department [ ' + response.departmentName + ' ] added successfully!');
-      promptUser();
-    });
+  enquirer.prompt([
+    {
+      type: 'input',
+      name: 'departmentName',
+      message: 'Enter the name of the department:'
+    },
+    {
+      type: 'input',
+      name: 'departmentId',
+      message: 'Enter the ID of the department:'
+    }
+  ]).then(function (response) {
+    executeQuery('INSERT INTO departments SET ?', {
+      name: response.departmentName,
+      id: response.departmentId
+    }, `Department [ ${response.departmentName} ] added successfully with ID: ${response.departmentId}`);
   });
-};
+}
 
 // Add a role
 function addRole() {
-  // Prompt the user for the role details
   enquirer.prompt([
+    {
+      type: 'input',
+      name: 'id',
+      message: 'Enter the ID of the role:'
+    },
     {
       type: 'input',
       name: 'title',
@@ -170,32 +114,24 @@ function addRole() {
       message: 'Enter the department ID for the role:'
     }
   ]).then(function (response) {
-    // Insert the new role into the database and prompt the user again 
-    connection.query('INSERT INTO roles SET ?', {
-      title: response.title,
-      salary: response.salary,
-      department_id: response.departmentId
-    }, function (err, res) {
-      if (err) throw err;
-      console.log('Role [ ' + response.title + ' ] added successfully!');
-      promptUser();
-    });
+    executeQuery('INSERT INTO roles (id, title, salary, department_id) VALUES (?, ?, ?, ?)',
+      [response.id, response.title, response.salary, response.departmentId],
+      `Role [ ${response.title} ] added successfully in department [ ${response.departmentId} ]`);
   });
-};
+}
 
 // Add an employee
 function addEmployee() {
-  // Prompt the user for the employee details
   enquirer.prompt([
     {
       type: 'input',
       name: 'firstName',
-      message: 'Enter the first name of the employee:'
+      message: 'Enter the employee first name:'
     },
     {
       type: 'input',
       name: 'lastName',
-      message: 'Enter the last name of the employee:'
+      message: 'Enter the employee last name:'
     },
     {
       type: 'input',
@@ -206,25 +142,21 @@ function addEmployee() {
       type: 'input',
       name: 'managerId',
       message: 'Enter the manager ID for the employee:'
+    },
+    {
+      type: 'input',
+      name: 'id',
+      message: 'Enter the ID of the employee:'
     }
   ]).then(function (response) {
-    // Insert the new employee into the database and prompt the user again 
-    connection.query('INSERT INTO employee SET ?', {
-      first_name: response.firstName,
-      last_name: response.lastName,
-      role_id: response.roleId,
-      manager_id: response.managerId
-    }, function (err, res) {
-      if (err) throw err;
-      console.log('Employee [ ' + response.firstName + ' ' + response.lastName + ' ] added successfully!');
-      promptUser();
-    });
+    executeQuery('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?, ?)',
+      [response.id, response.firstName, response.lastName, response.roleId, response.managerId],
+      `Employee [ ${response.firstName} ${response.lastName} ] added successfully with role [ ${response.roleId} ] and manager [ ${response.managerId} ]`);
   });
-};
+}
 
 // Update an employee's role
 function updateEmployeeRole() {
-  // Prompt the user for the employee details
   enquirer.prompt([
     {
       type: 'input',
@@ -237,18 +169,13 @@ function updateEmployeeRole() {
       message: 'Enter the new role ID for the employee:'
     }
   ]).then(function (response) {
-    // Update the employee's role in the database and prompt the user again 
-    connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [response.newRoleId, response.employeeId], function (err, res) {
-      if (err) throw err;
-      console.log('Employee [ ID: ' + response.employeeId + ' ] role updated successfully!');
-      promptUser();
-    });
+    executeQuery('UPDATE employee SET role_id = ? WHERE id = ?', [response.newRoleId, response.employeeId],
+      `Employee [ ID: ${response.employeeId} ] role updated successfully!`);
   });
-};
+}
 
 // Update a role title
 function updateRoleTitle() {
-  // Prompt the user for the role details
   enquirer.prompt([
     {
       type: 'input',
@@ -261,62 +188,131 @@ function updateRoleTitle() {
       message: 'Enter the new title for the role:'
     }
   ]).then(function (response) {
-    // Update the role title in the database and prompt the user again 
-    connection.query('UPDATE roles SET title = ? WHERE id = ?', [response.newTitle, response.roleId], function (err, res) {
-      if (err) throw err;
-      console.log('Role [ ID: ' + response.roleId + ' ] title updated successfully!');
-      promptUser();
-    });
+    executeQuery('UPDATE roles SET title = ? WHERE id = ?', [response.newTitle, response.roleId],
+      `Role [ ID: ${response.roleId} ] title updated successfully!`);
   });
-};
+}
 
 // Delete a role
 function deleteRole() {
-  // Prompt the user for the role ID
   enquirer.prompt({
     type: 'input',
     name: 'roleId',
     message: 'Enter the ID of the role you want to delete:',
   }).then(function (response) {
-    // Delete the role from the database and prompt the user again
-    connection.query('DELETE FROM roles WHERE id = ?', [response.roleId], function (err, res) {
-      if (err) throw err;
-      console.log('Role [ ID: ' + response.roleId + ' ] deleted successfully!');
-      promptUser();
-    });
+    executeQuery('DELETE FROM roles WHERE id = ?', [response.roleId],
+      `Role [ ID: ${response.roleId} ] deleted successfully!`);
   });
-};
+}
 
 // Delete an employee
 function deleteEmployee() {
-  // Prompt the user for the employee ID
   enquirer.prompt({
     type: 'input',
     name: 'employeeId',
     message: 'Enter the ID of the employee you want to delete:',
   }).then(function (response) {
-    // Delete the employee from the database and prompt the user again
-    connection.query('DELETE FROM employee WHERE id = ?', [response.employeeId], function (err, res) {
-      if (err) throw err;
-      console.log('Employee [ ID: ' + response.employeeId + ' ] deleted successfully!');
-      promptUser();
-    });
+    executeQuery('DELETE FROM employee WHERE id = ?', [response.employeeId],
+      `Employee [ ID: ${response.employeeId} ] deleted successfully!`);
   });
-};
+}
 
 // Delete a department
 function deleteDepartment() {
-  // Prompt the user for the department ID
   enquirer.prompt({
     type: 'input',
     name: 'departmentId',
     message: 'Enter the ID of the department you want to delete:',
   }).then(function (response) {
-    // Delete the department from the database and prompt the user again
-    connection.query('DELETE FROM departments WHERE id = ?', [response.departmentId], function (err, res) {
-      if (err) throw err;
-      console.log('Department [ ID: ' + response.departmentId + ' ] deleted successfully!');
-      promptUser();
-    });
+    executeQuery('DELETE FROM departments WHERE id = ?', [response.departmentId],
+      `Department [ ID: ${response.departmentId} ] deleted successfully!`);
   });
-};
+}
+
+// Update an employee's manager
+function updateEmployeeManager() {
+  enquirer.prompt([
+    {
+      type: 'input',
+      name: 'employeeId',
+      message: 'Enter the ID of the employee you want to update:'
+    },
+    {
+      type: 'input',
+      name: 'newManagerId',
+      message: 'Enter the new manager ID for the employee:'
+    }
+  ]).then(function (response) {
+    executeQuery('UPDATE employee SET manager_id = ? WHERE id = ?', [response.newManagerId, response.employeeId],
+      `Employee [ ID: ${response.employeeId} ] manager updated successfully!`);
+  });
+}
+
+// View employees by manager
+function viewEmployeesByManagerPrompt() {
+  enquirer.prompt({
+    type: 'input',
+    name: 'managerId',
+    message: 'Enter the manager ID to view employees:',
+  }).then(function (response) {
+    viewEmployeesByManager(response.managerId);
+  });
+}
+
+// View employees by department
+function viewEmployeesByDepartmentPrompt() {
+  enquirer.prompt({
+    type: 'input',
+    name: 'departmentId',
+    message: 'Enter the department ID to view employees:',
+  }).then(function (response) {
+    viewEmployeesByDepartment(response.departmentId);
+  });
+}
+
+// View the total utilized budget of a department
+function viewTotalUtilizedBudgetPrompt() {
+  enquirer.prompt({
+    type: 'input',
+    name: 'departmentId',
+    message: 'Enter the department ID to view budget:',
+  }).then(function (response) {
+    viewTotalUtilizedBudget(response.departmentId);
+  });
+}
+
+// View employees by manager
+function viewEmployeesByManager(managerId) {
+  executeQuery('SELECT * FROM employee WHERE manager_id = ?', [managerId]);
+}
+
+// View employees by department
+function viewEmployeesByDepartment(departmentId) {
+  executeQuery('SELECT * FROM employee e INNER JOIN roles r ON e.role_id = r.id WHERE r.department_id = ?', [departmentId]);
+}
+
+// View the total utilized budget of a department
+function viewTotalUtilizedBudget(departmentId) {
+  executeQuery('SELECT SUM(salary) AS total_utilized_budget FROM employee e INNER JOIN roles r ON e.role_id = r.id WHERE r.department_id = ?', [departmentId],
+    `Total Utilized Budget for Department ID ${departmentId}: $`);
+}
+
+// Exit the application
+function exit() {
+  figlet.text('Goodbye!', function (err, data) {
+    if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+    }
+    console.log(data);
+    connection.end();
+  });
+}
+
+// Start the application
+connection.connect(function (err) {
+  if (err) throw err;
+  console.log('Connected as id ' + connection.threadId);
+  promptUser();
+});
