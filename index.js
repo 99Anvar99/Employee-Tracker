@@ -32,6 +32,14 @@ async function promptUser() {
 		{ title: 'Add a role', value: 'addRole' },
 		{ title: 'Add an employee', value: 'addEmployee' },
 		{ title: 'Update an employee role', value: 'updateEmployeeRole' },
+    { title: 'Update a role title', value: 'updateRoleTitle' },
+    { title: 'Delete a role', value: 'deleteRole' },
+    { title: 'Delete an employee', value: 'deleteEmployee' },
+    { title: 'Delete a department', value: 'deleteDepartment' },
+    { title: 'Update an employee manager', value: 'updateEmployeeManager' },
+    { title: 'View employees by manager', value: 'viewEmployeesByManager' },
+    { title: 'View employees by department', value: 'viewEmployeesByDepartment' },
+    { title: 'View the total utilized budget of a department', value: 'viewTotalUtilizedBudget' },
 		{ title: 'Exit', value: 'exit' },
 	  ];
   
@@ -70,6 +78,26 @@ async function promptUser() {
     case 'updateEmployeeRole':
       updateEmployeeRole();
       break;
+    case 'updateRoleTitle':
+      updateRoleTitle();
+      break;
+    case 'deleteRole':
+      deleteRole();
+      break;
+    case 'deleteEmployee':
+      deleteEmployee();
+      break;
+    case 'deleteDepartment':
+      deleteDepartment();
+      break;
+    case 'updateEmployeeManager':
+      updateEmployeeManager();
+      break;
+    case 'viewEmployeesByManager':
+      viewEmployeesByManager();
+      break;
+    case 'viewEmployeesByDepartment':
+      viewEmployeesByDepartment();
     case 'exit':
       figlet('Good bye!', function (err, data) {
         if (err) {
