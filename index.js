@@ -132,3 +132,92 @@ function viewEmployees() {
     promptUser();
   });
 };
+
+// Add a department
+function addDepartment() {
+  // Prompt the user for the department name
+  enquirer.prompt({
+    type: 'input',
+    name: 'departmentName',
+    message: 'Enter the name of the department:',
+  }).then(function (response) {
+    // Insert the new department into the database and prompt the user again
+    connection.query('INSERT INTO departments SET ?', { name: response.departmentName }, function (err, res) {
+      if (err) throw err;
+      console.log('Department [ ' + response.departmentName + ' ] added successfully!');
+      promptUser();
+    });
+  });
+};
+
+// Add a role
+function addRole() {
+  // Prompt the user for the role details
+  enquirer.prompt([
+    {
+      type: 'input',
+      name: 'title',
+      message: 'Enter the title of the role:'
+    },
+    {
+      type: 'input',
+      name: 'salary',
+      message: 'Enter the salary for the role:'
+    },
+    {
+      type: 'input',
+      name: 'departmentId',
+      message: 'Enter the department ID for the role:'
+    }
+  ]).then(function (response) {
+    // Insert the new role into the database and prompt the user again 
+    connection.query('INSERT INTO roles SET ?', {
+      title: response.title,
+      salary: response.salary,
+      department_id: response.departmentId
+    }, function (err, res) {
+      if (err) throw err;
+      console.log('Role [ ' + response.title + ' ] added successfully!');
+      promptUser();
+    });
+  });
+};
+
+// Add an employee
+function addEmployee() {
+  // Prompt the user for the employee details
+  enquirer.prompt([
+    {
+      type: 'input',
+      name: 'firstName',
+      message: 'Enter the first name of the employee:'
+    },
+    {
+      type: 'input',
+      name: 'lastName',
+      message: 'Enter the last name of the employee:'
+    },
+    {
+      type: 'input',
+      name: 'roleId',
+      message: 'Enter the role ID for the employee:'
+    },
+    {
+      type: 'input',
+      name: 'managerId',
+      message: 'Enter the manager ID for the employee:'
+    }
+  ]).then(function (response) {
+    // Insert the new employee into the database and prompt the user again 
+    connection.query('INSERT INTO employee SET ?', {
+      first_name: response.firstName,
+      last_name: response.lastName,
+      role_id: response.roleId,
+      manager_id: response.managerId
+    }, function (err, res) {
+      if (err) throw err;
+      console.log('Employee [ ' + response.firstName + ' ' + response.lastName + ' ] added successfully!');
+      promptUser();
+    });
+  });
+};
