@@ -269,3 +269,54 @@ function updateRoleTitle() {
     });
   });
 };
+
+// Delete a role
+function deleteRole() {
+  // Prompt the user for the role ID
+  enquirer.prompt({
+    type: 'input',
+    name: 'roleId',
+    message: 'Enter the ID of the role you want to delete:',
+  }).then(function (response) {
+    // Delete the role from the database and prompt the user again
+    connection.query('DELETE FROM roles WHERE id = ?', [response.roleId], function (err, res) {
+      if (err) throw err;
+      console.log('Role [ ID: ' + response.roleId + ' ] deleted successfully!');
+      promptUser();
+    });
+  });
+};
+
+// Delete an employee
+function deleteEmployee() {
+  // Prompt the user for the employee ID
+  enquirer.prompt({
+    type: 'input',
+    name: 'employeeId',
+    message: 'Enter the ID of the employee you want to delete:',
+  }).then(function (response) {
+    // Delete the employee from the database and prompt the user again
+    connection.query('DELETE FROM employee WHERE id = ?', [response.employeeId], function (err, res) {
+      if (err) throw err;
+      console.log('Employee [ ID: ' + response.employeeId + ' ] deleted successfully!');
+      promptUser();
+    });
+  });
+};
+
+// Delete a department
+function deleteDepartment() {
+  // Prompt the user for the department ID
+  enquirer.prompt({
+    type: 'input',
+    name: 'departmentId',
+    message: 'Enter the ID of the department you want to delete:',
+  }).then(function (response) {
+    // Delete the department from the database and prompt the user again
+    connection.query('DELETE FROM departments WHERE id = ?', [response.departmentId], function (err, res) {
+      if (err) throw err;
+      console.log('Department [ ID: ' + response.departmentId + ' ] deleted successfully!');
+      promptUser();
+    });
+  });
+};
